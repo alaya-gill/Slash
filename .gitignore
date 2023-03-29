@@ -275,3 +275,5 @@ dump.rdb
 slash_django/media/
 
 .pytest_cache/
+
+.env
