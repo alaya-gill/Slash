@@ -1,0 +1,114 @@
+[
+    {
+    "id": 1,
+    "level": 1,
+    "parentModel": null,
+    "displayText": "Imagine",
+    "outputText": "/Imagine",
+    "api": "DALLE"
+    },
+    {
+    "id": 2,
+    "level": 1,
+    "parentModel": null,
+    "displayText": "Paraphrase",
+    "outputText": "/Paraphrase",
+    "api": "PARAPHRASE"
+    },
+    {
+    "id": 3,
+    "level": 1,
+    "parentModel": null,
+    "displayText": "Write",
+    "outputText": "/Write",
+    "api": "CHATGPT"
+    },
+    {
+    "id": 4,
+    "level": 2,
+    "parentModel": 1,
+    "displayText": "a landscape",
+    "outputText": " a landscape",
+    "api": "DALLE"
+    },
+    {
+    "id": 5,
+    "level": 2,
+    "parentModel": 1,
+    "displayText": "an animal",
+    "outputText": " an animal",
+    "api": "DALLE"
+    },
+    {
+    "id": 6,
+    "level": 2,
+    "parentModel": 2,
+    "displayText": "simple words",
+    "outputText": " with simple words",
+    "api": "PARAPHRASE"
+    },
+    {
+    "id": 7,
+    "level": 2,
+    "parentModel": 2,
+    "displayText": "technical jargon",
+    "outputText": " with technical jargon",
+    "api": "PARAPHRASE"
+    },
+    {
+    "id": 8,
+    "level": 2,
+    "parentModel": 3,
+    "displayText": "a story",
+    "outputText": " a story",
+    "api": "CHATGPT"
+    },
+    {
+    "id": 9,
+    "level": 2,
+    "parentModel": 3,
+    "displayText": "an explanation",
+    "outputText": " an explanation",
+    "api": "CHATGPT"
+    },
+    {
+    "id": 10,
+    "level": 3,
+    "parentModel": 4,
+    "displayText": "with a river",
+    "outputText": " with a river",
+    "api": "DALLE"
+    },
+    {
+    "id": 11,
+    "level": 3,
+    "parentModel": 4,
+    "displayText": "with a mountain",
+    "outputText": " with a mountain",
+    "api": "DALLE"
+    },
+    {
+    "id": 12,
+    "level": 3,
+    "parentModel": 5,
+    "displayText": "with fur",
+    "outputText": " with fur",
+    "api": "DALLE"
+    },
+    {
+    "id": 13,
+    "level": 3,
+    "parentModel": 5,
+    "displayText": "with scales",
+    "outputText": " with scales",
+    "api": "DALLE"
+    },
+    {
+    "id": 14,
+    "level": 4,
+    "parentModel": 10,
+    "displayText": "and a bridge",
+    "outputText": " and a bridge",
+    "api": "DALLE"
+    }
+    ]
