@@ -3,6 +3,8 @@ import openai
 import requests
 from dotenv import load_dotenv
 
+dotenv_path = '/home/kommonio/slash-django/Slash/.env'
+load_dotenv(dotenv_path)
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 PARAPHRASE_API_KEY = os.getenv("PARAPHRASE_API_KEY")

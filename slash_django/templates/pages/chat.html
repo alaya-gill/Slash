@@ -5,15 +5,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slash</title>
+  <title>S/ASH</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <link href="{% static 'css/project.css' %}" rel="stylesheet">
   <!-- Font Awesome -->
+
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 
   <script>
+    function appendRow(counter) {
+        let queryPara = '#query-para' + counter-1
+        let promptPara = '#prompt-para' + counter-1
+    $(queryPara).hide()
+    $(promptPara).hide()
+    
+
+      let row =
+        '<li id="table-data" class="d-flex justify-content-between mb-4">' +
+        '<div id="prompt-para' + counter + '" class="card mask-custom">' +
+        '<div id="query-para' + counter + '" class="card-header d-flex justify-content-between p-3"' +
+        'style="border-bottom: 1px solid rgba(255, 255, 255, 0.3);">' +
+        '</div></div></li>'
+
+      $('#hidden').append(row)
+
+
+    }
+
+    function showResult(response, counter) {
+      document.getElementById('search-menu').style.display = "none";
+      let queryPara = '#query-para' + counter
+      let promptPara = '#prompt-para' + counter
+      $(queryPara).append(
+        '<p class="fw-bold mb-0">' + response.query + '</p>'
+
+      )
+      $(queryPara).append(
+        '<button type="submit" id="' + response.query.replace(/\s/g, '-') +
+        '" class="btn btn-light" >Copy</button>'
+      )
+      $(promptPara).append(
+        '<div class="card-body"><p class="mb-0">' + response.prompt + '</p></div>'
+      )
+      document.getElementById(response.query.replace(/\s/g, '-')).onclick = function () {
+        copyToClipboard(response.prompt)
+      };
+
+      $('#hidden').show()
+    }
+    $(document).ready(function () {
+      var counter = 0;
+      $('#hidden').hide()
+      $('#prompt-form').submit(function (e) {
+
+        e.preventDefault();
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'query' %}",
+          data: {
+            "csrfmiddlewaretoken": '{{ csrf }}',
+            "prompt": document.getElementById('prompt').value
+          },
+          dataType: "json",
+          headers: {
+            "X-CSRFToken": "{{ csrf }}",
+          },
+          mode: "same-origin",
+          success: function (response) {
+            ++counter;
+            // on successfull creating object
+            // 1. clear the form.
+            console.log(response)
+            appendRow(counter)
+            showResult(response, counter)
+
+
+
+          },
+          error: function (response) {
+            // alert the error if any error occured
+            alert(response["responseJSON"]["error"]);
+          }
+        })
+      })
+    })
+
+
     function populateValue(data, level) {
       var level3 = false;
       if (level == 1) {
@@ -93,21 +172,22 @@
 </head>
 
 <body>
-  <header class="text-center text-white py-5">
-    <h1 class="display-4 font-weight-bold mb-4">Slash</h1>
-  </header>
+
   <div id="responses">
     <ul id="response-list" class="list-group mb-4"></ul>
   </div>
   <div class="container">
+    <header class="text-left text-black py-5">
+      <h1 class="display-4 font-weight-bold mb-4">S/ASH</h1>
+    </header>
     <div class="row">
       <div class="col-md-12">
         <div id="submenu" class="submenu"></div>
-        <form id="prompt-form" class="input-group" action="{% url 'query' %}" method="POST">
+        <form id="prompt-form" class="input-group">
           {% csrf_token %}
           <label class="input-search" id="input-search">
             <input type="text" id="prompt" name="prompt" class="form-control" autocomplete="off" placeholder="{{ query }}"
-              oninput="checkIfSlash()" required />
+              oninput="checkIfSlash()" required> <i class="fa-solid fa-chevron-right fa-2xl query-button"></i></input>
             <div class="search-menu" id="search-menu">
               <div class="search-related">
                 <ul id="level1" hidden="true">
@@ -136,9 +216,9 @@
           </label>
 
           </br>
-          <button type="submit" class="btn btn-primary">
+          {% comment %} <button type="submit" class="btn btn-primary">
             <i class="fas fa-search"></i>
-          </button>
+          </button> {% endcomment %}
         </form>
         </br>
         </br>
@@ -149,28 +229,9 @@
   </div>
 
   <div id="models" style="display:none;"></div>
-  {% if prompt %}
-  <div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <li class="d-flex justify-content-between mb-4">
-          <div class="card mask-custom">
-            <div class="card-header d-flex justify-content-between p-3"
-              style="border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
-              <p class="fw-bold mb-0">{{ query }} (Chat GPT)</p>
-              <button type="submit" class="btn btn-light" onclick='copyToClipboard("{{ prompt }}")'>Copy</button>
-            </div>
-            <div class="card-body">
-              <p class="mb-0">
-                {{ prompt }}
-              </p>
-            </div>
-          </div>
-        </li>
-      </div>
-    </div>
-  </div>
-  {% endif %}
+  <ul id="hidden">
+    
+  </ul>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
