@@ -2,10 +2,8 @@ import json
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import render
-from django.template.loader import render_to_string
 from slash_django.utils.functions import call_chat_gpt
-from slash_django.slash.utils import save_queries
-
+from slash_django.slash.utils import save_queries, is_ajax, fetch_chat
 
 # Create your views here.
 queries = []
@@ -14,8 +12,6 @@ queries = []
 def get_index(request):
     global queries
     length_of_chat = 0
-    if queries:
-        save_queries(queries)
     queries = []
     csrf = get_token(request)
     level_1, level_2, level_3 = get_levels_data()
@@ -48,7 +44,6 @@ API triggered when user submit a query in a search box.
 
 
 def query(request):
-    global queries
     level_1, level_2, level_3 = get_levels_data()
     context = {"prompt": None, "query": "", "data": {"level_1": level_1, "level_2": level_2, "level_3": level_3}}
 
@@ -67,6 +62,7 @@ def query(request):
                 "data": {"level_1": level_1, "level_2": level_2, "level_3": level_3},
                 "table-data": queries,
             }
+            save_queries(queries)
 
     print(queries)
     return JsonResponse(context, status=200)
@@ -76,14 +72,8 @@ def conversation(request, convo):
     global queries
     length_of_chat = 0
     chat = []
-    if queries:
-        save_queries(queries)
     if convo:
-        try:
-            with open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(convo.lower().replace(' ', '-')), 'r', encoding='utf-8') as fout:
-                chat = json.loads(fout.read())
-        except OSError as e:
-            pass
+        chat = fetch_chat(convo=convo)
     csrf = get_token(request)
     level_1, level_2, level_3 = get_levels_data()
     context = {"csrf": csrf, "prompt": None, "query": "Search Your Query", "data": {
