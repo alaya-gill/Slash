@@ -4,11 +4,13 @@ import re
 def save_queries(queries):
     filename = queries[0].get('query')
     filename = re.sub(r'\W+', '', filename)
+    print("save_queries", filename)
     fout = open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(filename.lower()), 'w', encoding='utf-8')
     json.dump(queries, fout)
     fout.close()
         
 def fetch_chat(convo):
+    print("fetch_chat",convo)
     chat = []
     try:
         filename = re.sub(r'\W+', '', convo)

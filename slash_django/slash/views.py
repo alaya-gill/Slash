@@ -64,12 +64,13 @@ def query(request):
             }
             save_queries(queries)
 
-    print(queries)
     return JsonResponse(context, status=200)
 
 
 def conversation(request, convo):
+    print("conversation",convo)
     global queries
+    queries = []
     length_of_chat = 0
     chat = []
     if convo:
