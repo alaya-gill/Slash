@@ -1,4 +1,5 @@
 {% load static %}
+{% load space_to_hyphen %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,23 +14,22 @@
   <!-- Font Awesome -->
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-
   <script>
     function appendRow(counter) {
-        let queryPara = '#query-para' + counter-1
-        let promptPara = '#prompt-para' + counter-1
-    $(queryPara).hide()
-    $(promptPara).hide()
-    
+      let queryPara = '#query-para' + counter
+      let promptPara = '#prompt-para' + counter
+      $(queryPara).hide()
+      $(promptPara).hide()
+
 
       let row =
-        '<li id="table-data" class="d-flex justify-content-between mb-4">' +
+        '<tr><td><li class="d-flex justify-content-between">' +
         '<div id="prompt-para' + counter + '" class="card mask-custom">' +
         '<div id="query-para' + counter + '" class="card-header d-flex justify-content-between p-3"' +
         'style="border-bottom: 1px solid rgba(255, 255, 255, 0.3);">' +
-        '</div></div></li>'
+        '</div></div></li></tr></td>'
 
-      $('#hidden').append(row)
+      $('#tbody').append(row)
 
 
     }
@@ -56,8 +56,13 @@
       $('#hidden').show()
     }
     $(document).ready(function () {
-      var counter = 0;
+      var counter = "{{ length_of_chat }}";
+      console.log(counter)
       $('#hidden').hide()
+      document.getElementById("prompt").onclick = function (e) {
+        e.preventDefault();
+      };
+
       $('#prompt-form').submit(function (e) {
 
         e.preventDefault();
@@ -176,7 +181,7 @@
   <div id="responses">
     <ul id="response-list" class="list-group mb-4"></ul>
   </div>
-  <div class="container">
+  <div class="slash-container">
     <header class="text-left text-black py-5">
       <h1 class="display-4 font-weight-bold mb-4">S/ASH</h1>
     </header>
@@ -186,8 +191,9 @@
         <form id="prompt-form" class="input-group">
           {% csrf_token %}
           <label class="input-search" id="input-search">
-            <input type="text" id="prompt" name="prompt" class="form-control" autocomplete="off" placeholder="{{ query }}"
-              oninput="checkIfSlash()" required> <i class="fa-solid fa-chevron-right fa-2xl query-button"></i></input>
+            <input type="text" id="prompt" name="prompt" class="form-control shadow-none no-border" autocomplete="off"
+              placeholder="{{ query }}" oninput="checkIfSlash()" required> <i
+              class="fa-solid fa-chevron-right fa-2xl query-button"></i></input>
             <div class="search-menu" id="search-menu">
               <div class="search-related">
                 <ul id="level1" hidden="true">
@@ -227,10 +233,45 @@
       </div>
     </div>
   </div>
+  <div class="slash-container row row-eq-height">
+    <div class="table-col col-md-8">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="text-center vert-align">Table1</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
 
-  <div id="models" style="display:none;"></div>
+            {% if chat %}
+            {% for res in chat %}
+            <tr>
+              <td>
+                <li class="d-flex justify-content-between">
+                  <div id="prompt-para{{ forloop.counter }}" class="card mask-custom">
+                    <div id="query-para{{ forloop.counter }}" class="card-header d-flex justify-content-between p-3"
+                      style="border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
+                      <p class="fw-bold mb-0">{{res.query}}</p>
+                      <button type="submit" id="{{res.query|cut:' '}}'" class="btn btn-light" onclick='copyToClipboard("{{res.prompt}}")'>Copy</button>
+                    </div>
+                    <div class="card-body"><p class="mb-0">{{res.prompt}}</p></div>
+                  </div>
+                </li>
+            </tr>
+            </td>
+            {% endfor %}
+            {% endif %}
+
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <ul id="hidden">
-    
+
   </ul>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
