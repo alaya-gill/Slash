@@ -13,6 +13,7 @@ class Slash:
         self.queries = []
         
     def get_index(self, request):
+        request.session.clear()
         print("index", is_ajax(request))
         length_of_chat = 0
         self.queries = []
@@ -69,7 +70,7 @@ class Slash:
                 }
                 
                 print(self.queries)
-                save_queries(self.queries)
+                save_queries(request, self.queries)
 
         return JsonResponse(context, status=200)
 
