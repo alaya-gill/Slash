@@ -5,8 +5,11 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from slash_django.slash import views 
+
+slash = views.Slash()
+
 urlpatterns = [
-    path("", views.get_index , name="home"),
+    path("", slash.get_index , name="home"),
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),
