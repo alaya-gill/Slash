@@ -13,7 +13,6 @@ class Slash:
         self.queries = []
         
     def get_index(self, request):
-        request.session.clear()
         print("index", is_ajax(request))
         length_of_chat = 0
         self.queries = []
@@ -55,6 +54,7 @@ class Slash:
 
         if request.method == 'POST':
             prompt = request.POST.get('prompt', None)
+            uuid = request.POST.get('uuid', None)
             if prompt:
                 prompt = prompt.replace('/', '')
                 response = call_chat_gpt(prompt)
@@ -70,7 +70,7 @@ class Slash:
                 }
                 
                 print(self.queries)
-                save_queries(request, self.queries)
+                save_queries(uuid, self.queries)
 
         return JsonResponse(context, status=200)
 

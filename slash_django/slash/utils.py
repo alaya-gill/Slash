@@ -1,14 +1,11 @@
 import json
 import re
 
-def save_queries(request, queries):
-    filename = queries[0].get('query')
-    filename = re.sub(r'\W+', '', filename)
-    session_filename = request.session.get('filename', False)
-    if not session_filename:
-        request.session['filename'] = filename
-    print("save_queries", filename)
-    fout = open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(filename.lower()), 'w', encoding='utf-8')
+def save_queries(uuid, queries):
+    # filename = queries[0].get('query')
+    # filename = re.sub(r'\W+', '', filename)
+    print("save_queries", uuid)
+    fout = open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(uuid), 'w', encoding='utf-8')
     json.dump(queries, fout)
     fout.close()
         
