@@ -5,16 +5,19 @@ def save_queries(uuid, queries):
     # filename = queries[0].get('query')
     # filename = re.sub(r'\W+', '', filename)
     print("save_queries", uuid)
-    fout = open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(uuid), 'w', encoding='utf-8')
-    json.dump(queries, fout)
-    fout.close()
+    with open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(uuid), 'r+', encoding='utf-8') as fout:
+        file_data =  json.load(fout)
+        file_data.append(queries)
+        fout.seek(0)
+        json.dump(file_data, fout, indent=4)
+    # json.dump(queries, fout)
+    # fout.close()
         
 def fetch_chat(convo):
     print("fetch_chat",convo)
     chat = []
     try:
-        filename = re.sub(r'\W+', '', convo)
-        fout=open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(filename.lower()), 'r', encoding='utf-8')
+        fout=open('./slash-django/Slash/slash_django/utils/conversations/{}.json'.format(convo), 'r', encoding='utf-8')
         chat = json.loads(fout.read())
         fout.close()
     except OSError as e:
