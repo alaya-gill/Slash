@@ -13,6 +13,7 @@ class Slash:
         self.queries = []
         
     def get_index(self, request):
+        print("index", is_ajax(request))
         length_of_chat = 0
         self.queries = []
         csrf = get_token(request)
@@ -46,6 +47,7 @@ class Slash:
 
 
     def query(self, request):
+        print("query", is_ajax(request))
         level_1, level_2, level_3 = self.get_levels_data()
         context = {"prompt": None, "query": "", "data": {"level_1": level_1, "level_2": level_2, "level_3": level_3}}
 
@@ -70,6 +72,7 @@ class Slash:
 
 
     def conversation(self, request, convo):
+        print("conversation", is_ajax(request))
         print("conversation",convo)
         self.queries = []
         length_of_chat = 0
