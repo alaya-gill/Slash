@@ -47,6 +47,7 @@ class Slash:
 
 
     def query(self, request):
+        print(self.queries)
         print("query", is_ajax(request))
         level_1, level_2, level_3 = self.get_levels_data()
         context = {"prompt": None, "query": "", "data": {"level_1": level_1, "level_2": level_2, "level_3": level_3}}
@@ -66,6 +67,8 @@ class Slash:
                     "data": {"level_1": level_1, "level_2": level_2, "level_3": level_3},
                     "table-data": self.queries,
                 }
+                
+                print(self.queries)
                 save_queries(self.queries)
 
         return JsonResponse(context, status=200)
