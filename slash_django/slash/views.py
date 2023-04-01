@@ -47,6 +47,7 @@ class Slash:
 
 
     def query(self, request):
+        self.queries = []
         print(self.queries)
         print("query", is_ajax(request))
         level_1, level_2, level_3 = self.get_levels_data()
