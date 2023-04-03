@@ -279,3 +279,5 @@ SOCIALACCOUNT_FORMS = {"signup": "slash_django.users.forms.UserSocialSignupForm"
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+# FILES_PATH
+ROOT_FILE_PATH = ''

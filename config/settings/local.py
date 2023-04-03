@@ -59,3 +59,5 @@ INSTALLED_APPS += ["django_extensions"]  # noqa F405
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+# FILES_PATH
+ROOT_FILE_PATH = './'

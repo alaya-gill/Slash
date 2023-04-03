@@ -140,3 +140,5 @@ LOGGING = {
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+# FILES_PATH
+ROOT_FILE_PATH = './slash-django/Slash/'

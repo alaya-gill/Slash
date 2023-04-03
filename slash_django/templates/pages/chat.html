@@ -72,12 +72,23 @@
       });
   }
 
-  
+
+  function updateScroll(){
+    var element = document.getElementById("table");
+    element.scrollTop = element.scrollHeight;
+}
+
     $(document).ready(function () {
       var uUid = generateUUID()
+      var pathname = window.location.pathname;
+      if (pathname.includes('slash/conversation/')){
+        let splittedPathname = pathname.split('/')
+        uUid = splittedPathname[splittedPathname.length-1]
+      }
       var counter = "{{ length_of_chat }}";
       console.log(counter)
       $('#hidden').hide()
+      updateScroll()
       document.getElementById("prompt").onclick = function (e) {
         e.preventDefault();
       };
@@ -105,6 +116,7 @@
             console.log(response)
             appendRow(counter)
             showResult(response, counter)
+            updateScroll()
 
 
 
@@ -255,7 +267,7 @@
   </div>
   <div class="slash-container row row-eq-height">
     <div class="table-col col-md-8">
-      <div class="table-responsive">
+      <div id="table" class="table-responsive">
         <table class="table">
           <thead>
             <tr>

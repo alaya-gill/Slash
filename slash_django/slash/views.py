@@ -4,7 +4,7 @@ from django.middleware.csrf import get_token
 from django.shortcuts import render
 from slash_django.utils.functions import call_chat_gpt
 from slash_django.slash.utils import save_queries, is_ajax, fetch_chat
-
+from django.conf import settings
 # Create your views here.
 
 
@@ -25,7 +25,7 @@ class Slash:
 
 
     def get_json(self):
-        f = open('./slash-django/Slash/slash_django/utils/models.json')
+        f = open(settings.ROOT_FILE_PATH + '/slash_django/utils/models.json')
         # f = open('slash_django/utils/models.json')
         # returns JSON object as
         # a dictionary
