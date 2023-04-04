@@ -25,7 +25,7 @@
       let row =
         '<tr><td><li class="d-flex justify-content-between">' +
         '<div id="prompt-para' + counter + '" class="card mask-custom">' +
-        '<div id="query-para' + counter + '" class="card-header d-flex justify-content-between p-3"' +
+        '<div id="query-para' + counter + '" class="d-flex justify-content-between"' +
         'style="border-bottom: 1px solid rgba(255, 255, 255, 0.3);">' +
         '</div></div></li></tr></td>'
 
@@ -34,56 +34,68 @@
 
     }
 
+    String.prototype.trim = function() 
+    {
+        return String(this).replace(/^\s+|\s+$/g, '');
+    };
+
     function showResult(response, counter) {
       document.getElementById('search-menu').style.display = "none";
       let queryPara = '#query-para' + counter
       let promptPara = '#prompt-para' + counter
       $(queryPara).append(
-        '<p class="fw-bold mb-0">' + response.query + '</p>'
+        '<p class="fw-bold mb-0">/// ' + response.query + '</p>'
 
       )
-      $(queryPara).append(
-        '<button type="submit" id="' + response.query.replace(/\s/g, '-') +
-        '" class="btn btn-light" >Copy</button>'
-      )
+      let id_a = 'a#' + response.query.replace(' ', '#') + 'a#' + counter
+      let unique_id = response.query.replace(' ', '#') + counter
+      let cut_id = response.query.replace(' ', '-') + counter
       $(promptPara).append(
-        '<div class="card-body"><p class="mb-0">' + response.prompt + '</p></div>'
+        '<div class="card-body"><p  id="' + unique_id + '" >' + response.prompt + '</p>' +
+          '<small style="color: grey"><i>Slash at '+ response.time + ' </i></small>'+
+        '<small class="mb-0"><a  id="' + id_a + '"  style="cursor: pointer; color: grey" >' +
+        '<i>Copy</i></a></small>' +
+        '<small> - </small>' +
+        '<small class="mb-0"><a style="cursor: pointer; color: grey">' +
+        '<i>Rephrase</i></a></small>' +
+        '</div>'
       )
-      document.getElementById(response.query.replace(/\s/g, '-')).onclick = function () {
-        copyToClipboard(response.prompt)
+      document.getElementById(id_a).onclick = function () {
+        copyToClipboard(unique_id)
       };
 
       $('#hidden').show()
     }
 
     function generateUUID() { // Public Domain/MIT
-      var d = new Date().getTime();//Timestamp
-      var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = Math.random() * 16;//random number between 0 and 16
-          if(d > 0){//Use timestamp until depleted
-              r = (d + r)%16 | 0;
-              d = Math.floor(d/16);
-          } else {//Use microseconds since page-load if supported
-              r = (d2 + r)%16 | 0;
-              d2 = Math.floor(d2/16);
-          }
-          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      var d = new Date().getTime(); //Timestamp
+      var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) ||
+        0; //Time in microseconds since page-load or 0 if unsupported
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16; //random number between 0 and 16
+        if (d > 0) { //Use timestamp until depleted
+          r = (d + r) % 16 | 0;
+          d = Math.floor(d / 16);
+        } else { //Use microseconds since page-load if supported
+          r = (d2 + r) % 16 | 0;
+          d2 = Math.floor(d2 / 16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
       });
-  }
+    }
 
 
-  function updateScroll(){
-    var element = document.getElementById("table");
-    element.scrollTop = element.scrollHeight;
-}
+    function updateScroll() {
+      var element = document.getElementById("table");
+      element.scrollTop = element.scrollHeight;
+    }
 
     $(document).ready(function () {
       var uUid = generateUUID()
       var pathname = window.location.pathname;
-      if (pathname.includes('slash/conversation/')){
+      if (pathname.includes('slash/conversation/')) {
         let splittedPathname = pathname.split('/')
-        uUid = splittedPathname[splittedPathname.length-1]
+        uUid = splittedPathname[splittedPathname.length - 1]
       }
       var counter = "{{ length_of_chat }}";
       console.log(counter)
@@ -197,12 +209,12 @@
 
     function copyToClipboard(text) {
       console.log(text)
-      const el = document.createElement("textarea");
-      el.value = text;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
+      var inp = document.createElement('input');
+      document.body.appendChild(inp)
+      inp.value = document.getElementById(text).textContent.trim()
+      inp.select();
+      document.execCommand('copy', false);
+      inp.remove();
     }
 
   </script>
@@ -219,7 +231,6 @@
     </header>
     <div class="row">
       <div class="col-md-12">
-        <div id="submenu" class="submenu"></div>
         <form id="prompt-form" class="input-group">
           {% csrf_token %}
           <label class="input-search" id="input-search">
@@ -282,12 +293,29 @@
               <td>
                 <li class="d-flex justify-content-between">
                   <div id="prompt-para{{ forloop.counter }}" class="card mask-custom">
-                    <div id="query-para{{ forloop.counter }}" class="card-header d-flex justify-content-between p-3"
+                    <div id="query-para{{ forloop.counter }}" class="d-flex justify-content-between"
                       style="border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
-                      <p class="fw-bold mb-0">{{res.query}}</p>
-                      <button type="submit" id="{{res.query|cut:' '}}'" class="btn btn-light" onclick='copyToClipboard("{{res.prompt}}")'>Copy</button>
+                      <p class="fw-bold mb-0">/// {{ res.query }}</p>
                     </div>
-                    <div class="card-body"><p class="mb-0">{{res.prompt}}</p></div>
+                    <div class="card-body">
+                      <p id="{{ res.query|unique_id:' ' }}{{ forloop.counter }}" class="">
+                        {{ res.prompt }}</p>
+
+                      <small style="color: grey"><i>Slash at {{ time }}</i></small>
+                      <small class="mb-0"><a id="{{ res.query|cut:' ' }}{{ forloop.counter }}"
+                          style="cursor: pointer; color: grey"
+                          onclick="return copyToClipboard('{{ res.query|unique_id:' ' }}{{ forloop.counter }}')">
+                          <i>Copy</i>
+                        </a>
+                      </small>
+
+                      <small>-</small>
+                      <small class="mb-0">
+                        <a style="cursor: pointer; color: grey">
+                          <i>Rephrase</i>
+                        </a>
+                      </small>
+                    </div>
                   </div>
                 </li>
             </tr>

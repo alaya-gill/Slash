@@ -172,7 +172,6 @@
   z-index: -1;
 }
 .table {
-  background-color: #eee;
   height: 100%;
   margin-bottom: 0;
 }
@@ -183,4 +182,8 @@ tr{
 }
 .table-responsive {
   height: 100%;
+}
+
+.copy{
+  cursor: pointer;
 }
