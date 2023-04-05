@@ -3,8 +3,8 @@ from datetime import datetime
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import render
-from slash_django.utils.functions import call_chat_gpt
-from slash_django.slash.utils import save_queries, is_ajax, fetch_chat
+from slash_django.utils.functions import call_chat_gpt, call_dalle
+from slash_django.slash.utils import save_queries, is_ajax, fetch_chat, imagine
 from django.conf import settings
 # Create your views here.
 
@@ -56,7 +56,11 @@ class Slash:
             uuid = request.POST.get('uuid', None)
             if prompt:
                 prompt = prompt.replace('/', '')
-                response = call_chat_gpt(prompt)
+                dall_e = imagine(prompt)
+                if dall_e:
+                    response = call_dalle(prompt)
+                else:
+                    response = call_chat_gpt(prompt)
                 self.queries.append({
                     "query": prompt,
                     'prompt': response,
@@ -68,6 +72,7 @@ class Slash:
                     'time': time_now().strftime('%H:%M'),
                     "data": {"level_1": level_1, "level_2": level_2, "level_3": level_3},
                     "table-data": self.queries,
+                    "dall_e": dall_e
                 }
 
                 print(self.queries)
@@ -86,8 +91,14 @@ class Slash:
             chat = fetch_chat(convo=convo)
         csrf = get_token(request)
         level_1, level_2, level_3 = self.get_levels_data()
-        context = {"csrf": csrf, "prompt": None, "query": "/// Search Your Query", "data": {
-            "level_1": level_1, "level_2": level_2, "level_3": level_3}, "chat": chat, 
-                   "time": time_now().strftime('%H:%M'),"length_of_chat": len(chat) if chat else length_of_chat}
+        context = {
+            "csrf": csrf, 
+            "prompt": None, 
+            "query": "/// Search Your Query", "data": {
+            "level_1": level_1, "level_2": level_2, "level_3": level_3}, 
+            "chat": chat, 
+            "time": time_now().strftime('%H:%M'),
+            "length_of_chat": len(chat) if chat else length_of_chat
+            }
         self.queries = chat
         return render(request, 'pages/chat.html', context=context)

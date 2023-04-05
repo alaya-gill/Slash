@@ -1,6 +1,17 @@
 import json, os
 from django.conf import settings
 
+def process_chat(conversation):
+    feed = []
+    for res in conversation:
+        obj = res
+        dall_e = obj.get('dall_e', None)
+        if dall_e is None:
+            obj.update({"dall_e": False})
+        feed.append(obj)
+    return feed
+        
+    
 def save_queries(uuid, queries):
     # filename = queries[0].get('query')
     # filename = re.sub(r'\W+', '', filename)
@@ -33,3 +44,8 @@ def fetch_chat(convo):
 
 def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+def imagine(prompt):
+    if "imagine" in prompt.lower().split():
+        return True
+    return False

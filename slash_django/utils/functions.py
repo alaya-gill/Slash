@@ -37,7 +37,13 @@ def call_paraphrase_api(prompt):
 
 def call_dalle(prompt):
     # Replace with the necessary code to call the DALL-E API
-    pass
+    response = openai.Image.create(
+    prompt=prompt,
+    model="image-alpha-001",
+    size="256x256",
+    response_format="url"
+    )
+    return response["data"][0]["url"]
 
 def process_prompt(prompt, chosen_model):
     if chosen_model == "Write":
