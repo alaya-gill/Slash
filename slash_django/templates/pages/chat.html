@@ -11,10 +11,63 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <link href="{% static 'css/project.css' %}" rel="stylesheet">
+
   <!-- Font Awesome -->
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
   <script>
+
+    function removeAllChildNodes(parent) {
+      while (parent.firstChild) {
+          parent.removeChild(parent.firstChild);
+      }
+  }
+
+    function showDropUp(res, id){
+     
+      let levels = res.levels
+      let level_id = '#level' + id 
+      document.getElementById('level'+id).hidden = false;
+      const container = document.querySelector(level_id);
+      removeAllChildNodes(container)
+      console.log(levels)
+      if (levels.length<1){
+        document.getElementById('search-menu').style.display = "none";
+
+      }
+        for(let i=0;i<levels.length;i++){
+          let row = '<li>' +
+          
+            '<span id="'+levels[i].id+levels[i].displayText+'">'+levels[i].displayText+'</span>' +
+          '</li>'
+          $(level_id).append(row)
+          document.getElementById(levels[i].id+levels[i].displayText).onclick = function () {
+            populateValue(levels[i].outputText, levels[i].level)
+          };
+        }
+    }
+    function getLevels(level, id) {
+          $.ajax({
+              type: 'GET',
+              url: 'api/slash/get_level_data/'+level+'/'+id,
+              dataType: "json",
+              headers: {
+                  "X-CSRFToken": "{{ csrf }}",
+              },
+            
+              mode: "same-origin",
+              success: function (response) {
+                  showDropUp(response, id)
+  
+  
+              },
+              error: function (response) {
+                  // alert the error if any error occured
+                  alert(response["responseJSON"]["error"]);
+              }
+          })
+        }
+
     function appendRow(counter) {
       let queryPara = '#query-para' + counter
       let promptPara = '#prompt-para' + counter
@@ -196,16 +249,21 @@
         document.getElementById('prompt').value = document.getElementById('prompt').value + data;
       if (level == 2) {
         level3 = true
-        showLevel3(level3)
+        showLevel3(data, level3)
+        return;
+      }
+      if (level == 3) {
+        document.getElementById('search-menu').style.display = "none";
         return;
       }
       checkIfSlash()
     }
 
-    function showLevel3(level3) {
+    function showLevel3(level, level3) {
       if (document.getElementById('level1').hidden == true &&
         document.getElementById('level2').hidden == false &&
         document.getElementById('level3').hidden == true && level3) {
+          getLevels(level.trim(), 3)
         document.getElementById('search-menu').style.display = "block";
         document.getElementById('level1').hidden = true;
         document.getElementById('level2').hidden = true;
@@ -244,10 +302,11 @@
       } else if (
         document.getElementById('prompt').value.replace(/\s/g, '') == '/Write' ||
         document.getElementById('prompt').value.replace(/\s/g, '') == '/Paraphrase' ||
-        document.getElementById('prompt').value.replace(/\s/g, '') == '/Imagine') {
+        document.getElementById('prompt').value.replace(/\s/g, '') == '/Imagine' ||
+        document.getElementById('prompt').value.replace(/\s/g, '') == '/Produceareport') {
+          getLevels(document.getElementById('prompt').value.trim().replace('/',''),2)
         document.getElementById('search-menu').style.display = "block";
         document.getElementById('level1').hidden = true;
-        document.getElementById('level2').hidden = false;
         document.getElementById('level3').hidden = true;
         level3 = false
       }
@@ -284,7 +343,7 @@
               placeholder="{{ query }}" oninput="checkIfSlash()" required> <i
               class="fa-solid fa-chevron-right fa-2xl query-button"></i></input>
             <div class="search-menu" id="search-menu">
-              <div class="search-related">
+              <div class="search-related" id="search-related">
                 <ul id="level1" hidden="true">
                   {% for x in data.level_1 %}
                   <li>
@@ -293,18 +352,10 @@
                   {% endfor %}
                 </ul>
                 <ul id="level2" hidden="true">
-                  {% for x in data.level_2 %}
-                  <li>
-                    <span onclick='populateValue("{{ x.outputText }}", "{{ x.level }}")'>{{ x.outputText }}</span>
-                  </li>
-                  {% endfor %}
+
                 </ul>
                 <ul id="level3" hidden="true">
-                  {% for x in data.level_3 %}
-                  <li>
-                    <span onclick='populateValue("{{ x.outputText }}", "{{ x.level }}")'>{{ x.outputText }}</span>
-                  </li>
-                  {% endfor %}
+                  
                 </ul>
               </div>
             </div>

@@ -102,3 +102,15 @@ class Slash:
             }
         self.queries = chat
         return render(request, 'pages/chat.html', context=context)
+
+    def get_level_data(self, request, level, id):
+        level_1, level_2, level_3 = self.get_levels_data()
+        if int(id)==2:
+            level_id = [obj['id'] for obj in level_1 if obj['displayText'].lower()==level.lower()][0]
+            levels = [level for level in level_2 if level["parentModel"]==level_id]
+            return JsonResponse({"levels": levels}, status=200)
+        elif int(id)==3:
+            level_id = [obj['id'] for obj in level_2 if obj['displayText'].lower()==level.lower()][0]
+            levels = [level for level in level_3 if level["parentModel"]==level_id]
+            return JsonResponse({"levels": levels}, status=200)
+            
