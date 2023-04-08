@@ -16,57 +16,57 @@
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
   <script>
-
     function removeAllChildNodes(parent) {
       while (parent.firstChild) {
-          parent.removeChild(parent.firstChild);
+        parent.removeChild(parent.firstChild);
       }
-  }
+    }
 
-    function showDropUp(res, id){
-     
+    function showDropUp(res, id) {
+
       let levels = res.levels
-      let level_id = '#level' + id 
-      document.getElementById('level'+id).hidden = false;
+      let level_id = '#level' + id
+      document.getElementById('level' + id).hidden = false;
       const container = document.querySelector(level_id);
       removeAllChildNodes(container)
       console.log(levels)
-      if (levels.length<1){
+      if (levels.length < 1) {
         document.getElementById('search-menu').style.display = "none";
 
       }
-        for(let i=0;i<levels.length;i++){
-          let row = '<li>' +
-          
-            '<span id="'+levels[i].id+levels[i].displayText+'">'+levels[i].displayText+'</span>' +
+      for (let i = 0; i < levels.length; i++) {
+        let row = '<li>' +
+
+          '<span id="' + levels[i].id + levels[i].displayText + '">' + levels[i].displayText + '</span>' +
           '</li>'
-          $(level_id).append(row)
-          document.getElementById(levels[i].id+levels[i].displayText).onclick = function () {
-            populateValue(levels[i].outputText, levels[i].level)
-          };
-        }
+        $(level_id).append(row)
+        document.getElementById(levels[i].id + levels[i].displayText).onclick = function () {
+          populateValue(levels[i].outputText, levels[i].level)
+        };
+      }
     }
+
     function getLevels(level, id) {
-          $.ajax({
-              type: 'GET',
-              url: 'api/slash/get_level_data/'+level+'/'+id,
-              dataType: "json",
-              headers: {
-                  "X-CSRFToken": "{{ csrf }}",
-              },
-            
-              mode: "same-origin",
-              success: function (response) {
-                  showDropUp(response, id)
-  
-  
-              },
-              error: function (response) {
-                  // alert the error if any error occured
-                  alert(response["responseJSON"]["error"]);
-              }
-          })
+      $.ajax({
+        type: 'GET',
+        url: '/api/slash/get_level_data/' + level + '/' + id,
+        dataType: "json",
+        headers: {
+          "X-CSRFToken": "{{ csrf }}",
+        },
+
+        mode: "same-origin",
+        success: function (response) {
+          showDropUp(response, id)
+
+
+        },
+        error: function (response) {
+          // alert the error if any error occured
+          alert(response["responseJSON"]["error"]);
         }
+      })
+    }
 
     function appendRow(counter) {
       let queryPara = '#query-para' + counter
@@ -102,8 +102,9 @@
       let id_a = 'a#' + response.query.replace(' ', '#') + 'a#' + counter
       let unique_id = response.query.replace(' ', '#') + counter
       let cut_id = response.query.replace(' ', '-') + counter
+      let path = response.prompt
       $(promptPara).append(
-        '<div class="card-body"><img class="mb-0" src="' + response.prompt + '"  id="' + unique_id + '" />' +
+        '<div class="card-body"><img class="mb-0" src="' + path + '"  id="' + unique_id + '" />' +
         '</div>' +
         '<div class="card-body" >' +
         '<small style="color: grey"><i>DALL-E at ' + response.time + ' </i></small>' +
@@ -263,7 +264,7 @@
       if (document.getElementById('level1').hidden == true &&
         document.getElementById('level2').hidden == false &&
         document.getElementById('level3').hidden == true && level3) {
-          getLevels(level.trim(), 3)
+        getLevels(level.trim(), 3)
         document.getElementById('search-menu').style.display = "block";
         document.getElementById('level1').hidden = true;
         document.getElementById('level2').hidden = true;
@@ -304,7 +305,7 @@
         document.getElementById('prompt').value.replace(/\s/g, '') == '/Paraphrase' ||
         document.getElementById('prompt').value.replace(/\s/g, '') == '/Imagine' ||
         document.getElementById('prompt').value.replace(/\s/g, '') == '/Produceareport') {
-          getLevels(document.getElementById('prompt').value.trim().replace('/',''),2)
+        getLevels(document.getElementById('prompt').value.trim().replace('/', ''), 2)
         document.getElementById('search-menu').style.display = "block";
         document.getElementById('level1').hidden = true;
         document.getElementById('level3').hidden = true;
@@ -355,7 +356,7 @@
 
                 </ul>
                 <ul id="level3" hidden="true">
-                  
+
                 </ul>
               </div>
             </div>
@@ -394,13 +395,24 @@
                       style="border-bottom: 1px solid rgba(255, 255, 255, 0.3);">
                       <p class="fw-bold mb-0">/// {{ res.query }}</p>
                     </div>
-                    <div class="card-body">
 
+
+
+                    {% if res.dall_e %}
+                    <div class="card-body">
+                      <img class="mb-0" src="{{ res.prompt }}"
+                        id="{{ res.query|unique_id:' ' }}{{ forloop.counter }}" />
+                    </div>
+                    <div class="card-body">
+                    {% else %}
+                    <div class="card-body">
                       <p id="{{ res.query|unique_id:' ' }}{{ forloop.counter }}" class="">
                         {{ res.prompt }}
                       </p>
-                      {% if res.time %}
+                      {% endif %}
 
+
+                      {% if res.time %}
                       <small style="color: grey"><i>Slash at {{ res.time }}</i></small>
                       {% else %}
                       <small style="color: grey"><i>Slash at {{ time }}</i></small>

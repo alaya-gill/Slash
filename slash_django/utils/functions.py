@@ -1,7 +1,10 @@
 import os
 import openai
 import requests
+import base64
+import uuid
 from dotenv import load_dotenv
+from django.conf import settings
 
 dotenv_path = '/home/kommonio/slash-django/Slash/.env'
 load_dotenv(dotenv_path)
@@ -41,9 +44,14 @@ def call_dalle(prompt):
     prompt=prompt,
     model="image-alpha-001",
     size="256x256",
-    response_format="url"
+    response_format="b64_json"
     )
-    return response["data"][0]["url"]
+    print()
+    unique_id = str(uuid.uuid4())
+    path = settings.ROOT_FILE_PATH + "slash_django/static/images/dall_e/{}.jpg".format(unique_id)
+    with open(path, "wb") as f:
+        f.write(base64.b64decode(response["data"][0]['b64_json']))
+    return "/static/images/dall_e/"+unique_id+".jpg"
 
 def process_prompt(prompt, chosen_model):
     if chosen_model == "Write":

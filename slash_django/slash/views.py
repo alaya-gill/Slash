@@ -64,7 +64,8 @@ class Slash:
                 self.queries.append({
                     "query": prompt,
                     'prompt': response,
-                    'time': time_now().strftime('%H:%M')
+                    'time': time_now().strftime('%H:%M'),
+                    "dall_e": dall_e
                 })
                 context = {
                     "query": prompt,
